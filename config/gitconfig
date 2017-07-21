@@ -1,0 +1,15 @@
+[user]
+    email = hurley@mozilla.com
+[pretty]
+    hgpatch = "format:# HG changeset patch%n# User %an <%ae>%n# Date %ad%n%s%n%b"
+[alias]
+    hgpatch = show --format=hgpatch
+[bz]
+    default-tracker = bugzilla.mozilla.org
+    default-product = Core
+    default-component = Networking
+    username = hurley@mozilla.com
+[mozreview]
+    nickname = nwgh
+[cinnabar]
+    helper = ~/src/git-cinnabar/git-cinnabar-helper
