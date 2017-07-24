@@ -1,3 +1,5 @@
+[ui]
+username = Nicholas Hurley <hurley@mozilla.com>
 [hooks]
 pre-push = python:~/src/mozilla/mozdev/hgext/mozprepush.py:mozprepush
 [extensions]
