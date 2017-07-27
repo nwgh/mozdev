@@ -10,3 +10,98 @@ elif [[ "$NWH_ZSH_CONFIG" == "osx" ]] ; then
     export MOZCONFIG="$MOZCONFIG_ROOT/mac_debug"
     export MOZ_NODE_PATH="/usr/local/bin/node"
 fi
+
+# Some useful commands for debugging firefox
+logfile() {
+    export NSPR_LOG_FILE="$1"
+    export MOZ_LOG_FILE="$1"
+    shift
+    "$@"
+    unset MOZ_LOG_FILE
+    unset NSPR_LOG_FILE
+}
+
+_add_to_nspr_log_modules() {
+    local module;
+    module="$1"
+    if [[ -z "$module" ]] ; then
+        return
+    fi
+
+    if [[ -z "$MOZ_LOG" ]] ; then
+        MOZ_LOG=timestamp
+        NSPR_LOG_MODULES=timestamp
+    fi
+    if [[ -z "$MOZ_LOG_FILE" ]] ; then
+        export MOZ_LOG_FILE=/tmp/nspr.log
+        export NSPR_LOG_FILE=/tmp/nspr.log
+    fi
+
+    MOZ_LOG="$MOZ_LOG","$module"
+    NSPR_LOG_MODULES="$NSPR_LOG_MODULES","$module"
+    export MOZ_LOG NSPR_LOG_MODULES
+}
+
+_cleanup_nspr_logging() {
+    unset NSPR_LOG_MODULES
+    unset NSPR_LOG_FILE
+    unset MOZ_LOG_FILE
+    unset MOZ_LOG
+}
+
+seerlog() {
+    _add_to_nspr_log_modules "NetworkPredictor:5"
+    "$@"
+    _cleanup_nspr_logging
+}
+
+httplog() {
+    _add_to_nspr_log_modules "nsHttp:5"
+    keylog "$@"
+    _cleanup_nspr_logging
+}
+
+socketlog() {
+    _add_to_nspr_log_modules "nsSocketTransport:5"
+    "$@"
+    _cleanup_nspr_logging
+}
+
+dnslog() {
+    _add_to_nspr_log_modules "nsHostResolver:5"
+    "$@"
+    _cleanup_nspr_logging
+}
+
+cookielog() {
+    _add_to_nspr_log_modules "cookie:4"
+    "$@"
+    _cleanup_nspr_logging
+}
+
+cachelog() {
+    _add_to_nspr_log_modules "cache2:5"
+    "$@"
+    _cleanup_nspr_logging
+}
+
+mozlog() {
+    logmodule="$1"
+    shift
+    _add_to_nspr_log_modules "$logmodule:5"
+    "$@"
+    _cleanup_nspr_logging
+}
+
+keylog() {
+    export SSLKEYLOGFILE=/tmp/nsskeys.log
+    "$@"
+    unset SSLKEYLOGFILE
+}
+
+keylogtofile() {
+    export SSLKEYLOGFILE="$1"
+    shift
+    "$@"
+    unset SSLKEYLOGFILE
+}
