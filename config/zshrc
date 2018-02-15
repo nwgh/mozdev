@@ -4,10 +4,7 @@ export NODE_HTTP2_ROOT="${HOME}/src/node-http2"
 export MOZHTTP2_PORT=48872 # "HTTP2" on a phone keypad
 export PATH="${PATH}:${HOME}/src/mozilla/mozdev/bin"
 
-if [[ "$NWH_ZSH_CONFIG" == "linux" ]] ; then
-    export MOZCONFIG="$MOZCONFIG_ROOT/linux_debug_noopt"
-elif [[ "$NWH_ZSH_CONFIG" == "osx" ]] ; then
-    export MOZCONFIG="$MOZCONFIG_ROOT/mac_debug"
+if [[ "$NWH_ZSH_CONFIG" == "osx" ]] ; then
     export MOZ_NODE_PATH="/usr/local/bin/node"
 fi
 
