@@ -1,0 +1,32 @@
+#!/usr/bin/env python
+
+import copy
+import os
+import subprocess
+import sys
+
+if len(sys.argv) != 2:
+    sys.stderr.write('Usage: nightly-with-profile <profiledir>\n')
+    sys.exit(1)
+
+profiledir = os.path.expanduser(sys.argv[1])
+if not os.path.exists(profiledir):
+    os.mkdir(profiledir)
+
+if not os.path.isdir(profiledir):
+    sys.stderr.write('%s: not a directory\n' % (profiledir,))
+    sys.exit(1)
+
+mozlogfile = os.path.join(profiledir, 'moz.log')
+keylogfile = os.path.join(profiledir, 'sslkey.log')
+nightly_env = copy.deepcopy(os.environ)
+nightly_env['MOZ_LOG'] = 'timestamp,nsHttp:5'
+nightly_env['NSPR_LOG_MODULES'] = nightly_env['MOZ_LOG']
+nightly_env['MOZ_LOG_FILE'] = mozlogfile
+nightly_env['NSPR_LOG_FILE'] = mozlogfile
+nightly_env['SSLKEYLOGFILE'] = keylogfile
+
+sys.exit(subprocess.call(['/usr/bin/open', '-n',
+                          '/Applications/FirefoxNightly.app', '--args',
+                          '-no-remote', '-profile', profiledir],
+                         env=nightly_env))
