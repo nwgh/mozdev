@@ -1,0 +1,72 @@
+#!/usr/bin/env python
+
+import copy
+import json
+import os
+import subprocess
+import sys
+
+USAGE='Usage: devbuild-with-profile [--nosubdir] <profiledir>\n'
+
+if not os.path.exists('mach'):
+    sys.stderr.write('Must be run from a mozilla-central checkout\n')
+    sys.exit(1)
+
+p = subprocess.Popen(['./mach', 'environment', '--format', 'json'],
+                     stdout=subprocess.PIPE)
+p.wait()
+machenv = json.load(p.stdout)
+objdir = machenv['topobjdir']
+
+if not os.path.exists(objdir):
+    sys.stderr.write('Objdir is missing\n')
+    sys.exit(1)
+
+nightlyapp = os.path.join(objdir, 'dist', 'NightlyDebug.app')
+if not os.path.exists(nightlyapp):
+    sys.stderr.write('App is missing\n')
+    sys.exit(1)
+
+if len(sys.argv) < 2 or len(sys.argv) > 3:
+    sys.stderr.write(USAGE)
+    sys.exit(1)
+
+use_subdir = True
+profiledir = sys.argv[1]
+if len(sys.argv) == 3:
+    if sys.argv[1] != '--nosubdir':
+        sys.stderr.write(USAGE)
+        sys.exit(1)
+    profiledir = sys.argv[2]
+    use_subdir = False
+
+profiledir = os.path.expanduser(profiledir)
+if not os.path.exists(profiledir):
+    os.mkdir(profiledir)
+
+if not os.path.isdir(profiledir):
+    sys.stderr.write('%s: not a directory\n' % (profiledir,))
+    sys.exit(1)
+
+logroot = profiledir
+if use_subdir:
+    profiledir = os.path.join(profiledir, 'profile')
+    if not os.path.exists(profiledir):
+        os.mkdir(profiledir)
+    if not os.path.isdir(profiledir):
+        sys.stderr.write('%s: not a directory\n' % (profiledir,))
+        sys.exit(1)
+
+mozlogfile = os.path.join(logroot, 'moz.log')
+keylogfile = os.path.join(logroot, 'sslkey.log')
+nightly_env = copy.deepcopy(os.environ)
+nightly_env['MOZ_LOG'] = 'timestamp,nsHttp:5'
+nightly_env['NSPR_LOG_MODULES'] = nightly_env['MOZ_LOG']
+nightly_env['MOZ_LOG_FILE'] = mozlogfile
+nightly_env['NSPR_LOG_FILE'] = mozlogfile
+nightly_env['SSLKEYLOGFILE'] = keylogfile
+
+sys.exit(subprocess.call(['/usr/bin/open', '-n',
+                          nightlyapp, '--args',
+                          '-no-remote', '-profile', profiledir],
+                         env=nightly_env))
