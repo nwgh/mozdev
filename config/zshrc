@@ -3,6 +3,7 @@ export MACH_NOTIFY_MINTIME=0
 export NODE_HTTP2_ROOT="${HOME}/src/node-http2"
 export MOZHTTP2_PORT=48872 # "HTTP2" on a phone keypad
 export PATH="${PATH}:${HOME}/src/mozilla/mozdev/bin"
+export SCCACHE_CACHE_SIZE="50G"
 
 if [[ "$NWH_ZSH_CONFIG" == "osx" ]] ; then
     export MOZ_NODE_PATH="/usr/local/bin/node"
