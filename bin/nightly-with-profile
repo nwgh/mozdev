@@ -5,11 +5,20 @@ import os
 import subprocess
 import sys
 
-if len(sys.argv) != 2:
-    sys.stderr.write('Usage: nightly-with-profile <profiledir>\n')
+if len(sys.argv) < 2 or len(sys.argv) > 3:
+    sys.stderr.write('Usage: nightly-with-profile [--subdir] <profiledir>\n')
     sys.exit(1)
 
-profiledir = os.path.expanduser(sys.argv[1])
+use_subdir = False
+profiledir = sys.argv[1]
+if len(sys.argv) == 3:
+    if sys.argv[1] != '--subdir':
+        sys.stderr.write(USAGE)
+        sys.exit(1)
+    profiledir = sys.argv[2]
+    use_subdir = True
+
+profiledir = os.path.expanduser(profiledir)
 if not os.path.exists(profiledir):
     os.mkdir(profiledir)
 
@@ -17,8 +26,17 @@ if not os.path.isdir(profiledir):
     sys.stderr.write('%s: not a directory\n' % (profiledir,))
     sys.exit(1)
 
-mozlogfile = os.path.join(profiledir, 'moz.log')
-keylogfile = os.path.join(profiledir, 'sslkey.log')
+logroot = profiledir
+if use_subdir:
+    profiledir = os.path.join(profiledir, 'profile')
+    if not os.path.exists(profiledir):
+        os.mkdir(profiledir)
+    if not os.path.isdir(profiledir):
+        sys.stderr.write('%s: not a directory\n' % (profiledir,))
+        sys.exit(1)
+
+mozlogfile = os.path.join(logroot, 'moz.log')
+keylogfile = os.path.join(logroot, 'sslkey.log')
 nightly_env = copy.deepcopy(os.environ)
 nightly_env['MOZ_LOG'] = 'timestamp,nsHttp:5'
 nightly_env['NSPR_LOG_MODULES'] = nightly_env['MOZ_LOG']
