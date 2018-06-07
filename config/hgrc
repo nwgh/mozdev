@@ -3,20 +3,6 @@ username = Nicholas Hurley <hurley@mozilla.com>
 [hooks]
 pre-push = python:~/src/mozilla/mozdev/hgext/mozprepush.py:mozprepush
 [extensions]
-bzexport = ~/.mozbuild/version-control-tools/hgext/bzexport
-reviewboard = ~/.mozbuild/version-control-tools/hgext/reviewboard/client.py
 firefoxtree = ~/.mozbuild/version-control-tools/hgext/firefoxtree
-mqext = ~/.mozbuild/version-control-tools/hgext/mqext
-qimportbz = ~/.mozbuild/version-control-tools/hgext/qimportbz
-push-to-try = ~/.mozbuild/version-control-tools/hgext/push-to-try
-bzpost = ~/.mozbuild/version-control-tools/hgext/bzpost
 [mozilla]
 ircnick = nwgh
-[bugzilla]
-username = hurley@mozilla.com
-[bzpost]
-excludetrees = try mozilla-inbound inbound integration/mozilla-inbound
-[hostsecurity]
-bugzilla.mozilla.org:fingerprints = sha256:10:95:a8:c1:e1:c3:18:fa:e4:95:40:99:11:07:6d:e3:79:ab:e5:b0:29:50:ff:40:e8:e8:63:c4:fd:f3:9f:cb
-[paths]
-review = ssh://reviewboard-hg.mozilla.org/autoreview
