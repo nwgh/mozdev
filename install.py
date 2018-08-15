@@ -152,6 +152,13 @@ def main():
         orig_zshrc, new_zshrc = modify_zshrc(local_zshrc, mozdev_zshrc)
         maybe_update_file(local_zshrc, orig_zshrc, new_zshrc)
 
+    if sys.platform == 'darwin':
+        # TODO
+        print >>sys.stderr, 'please set up vm notification server yourself'
+    elif sys.platform.startswith('linux'):
+        # TODO
+        print >> sys.stderr, 'please set up vm notification client yourself'
+
 
 if __name__ == '__main__':
     main()

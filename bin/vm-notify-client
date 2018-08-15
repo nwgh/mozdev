@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+
+import argparse
+import json
+import subprocess
+import urllib.request
+
+def send_remote_notification(message):
+    data = bytes(json.dumps({'message': message}), 'utf-8')
+    urllib.request.urlopen('http://192.168.86.1:6683', data=data)
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--app-name', dest='app_name', required=True)
+parser.add_argument('title')
+parser.add_argument('message')
+args = parser.parse_args()
+
+try:
+    send_remote_notification(args.message)
+except Exception as e:
+    print('Error sending remote notification: %s' % (e,))
+
+try:
+    subprocess.call(['/usr/bin/notify-send',
+                     '--app-name=' + args.app_name,
+                     args.title, args.message])
+except Exception as e:
+    print('Error sending local notification: %s' % (e,))

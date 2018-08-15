@@ -1,0 +1,52 @@
+#!/usr/bin/env python3
+
+import http.server
+import json
+import subprocess
+
+class VMNotifyHandler(http.server.BaseHTTPRequestHandler):
+    def do_POST(self):
+        try:
+            content_length = int(self.headers['content-length'])
+        except Exception:
+            self.send_error(400)
+            self.wfile.write(b'missing content-length')
+            return
+
+        try:
+            strdata = self.rfile.read(content_length)
+        except Exception:
+            self.send_error(500)
+            self.wfile.write(b'error reading post body')
+            return
+
+        try:
+            request = json.loads(strdata)
+        except Exception:
+            self.send_error(400)
+            self.wfile.write(b'error reading json')
+            return
+
+        if 'message' not in request:
+            self.send_error(400)
+            self.wfile.write(b'json missing message')
+            return
+
+        try:
+            subprocess.call(['terminal-notifier',
+                             '-title', 'Mozilla Build System (VM)',
+                             '-group', 'mozbuild',
+                             '-message', request['message']])
+        except Exception:
+            self.send_error(500)
+            self.wfile.write('error calling terminal-notifier')
+            return
+
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b'ok')
+
+if __name__ == '__main__':
+    server_address = ('', 6683)
+    httpd = http.server.HTTPServer(server_address, VMNotifyHandler)
+    httpd.serve_forever()
