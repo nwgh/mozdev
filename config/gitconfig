@@ -12,4 +12,4 @@
 [mozreview]
     nickname = nwgh
 [cinnabar]
-    helper = ~/src/git-cinnabar/git-cinnabar-helper
+    helper = ~/.mozbuild/git-cinnabar/git-cinnabar-helper
