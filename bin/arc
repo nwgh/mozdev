@@ -1,9 +1,9 @@
 #!/bin/sh
 
-if [ ! -d "$HOME/src/mozilla/phab/arcanist/bin" ] ; then
+if [ ! -d "$HOME/.mozbuild/moz-phab/arcanist/bin" ] ; then
     exit 1
 fi
 
-PATH="$HOME/src/mozilla/phab/arcanist/bin:$PATH"
+PATH="$HOME/.mozbuild/moz-phab/arcanist/bin:$PATH"
 export PATH
 exec arc "$@"
